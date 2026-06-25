@@ -6,7 +6,7 @@
  */
 const config = {
   // Backend API base URL — change this when deploying to a different environment
-  API_BASE_URL: "http://localhost:8000",
+  API_BASE_URL: "https://webauthpocapi.onrender.com",
 
   // Token storage keys (localStorage)
   STORAGE_KEYS: {
