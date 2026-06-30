@@ -96,21 +96,17 @@ const bufferToBase64url = (buffer) => {
  *    → If another device was registered before, its credential is REPLACED
  *
  * @param {object} formData - Onboarding form data
- * @param {string} formData.employee_id - The employee identifier (e.g., "EMP001")
- * @param {string} formData.location - The clinic / site (e.g., "Clinic 1")
- * @param {string} formData.company_email - The employee's company email
+ * @param {string} formData.device_id - The device identifier (e.g., "DEVICE001")
  * @param {string} formData.invitation_token - The admin-issued invitation token
  * @returns {object} Token data from successful registration
  * @throws {Error} If registration fails at any step
  */
 export const registerPasskey = async (formData) => {
   // Step 1: Validate the invitation token and get registration options.
-  // The server confirms the employee + invitation token BEFORE returning
+  // The server confirms the device + invitation token BEFORE returning
   // options. If the token is invalid/expired, this throws a 400 error.
   const options = await api.post("/register/options", {
-    employee_id: formData.employee_id,
-    location: formData.location,
-    company_email: formData.company_email,
+    device_id: formData.device_id,
     invitation_token: formData.invitation_token,
   });
 
@@ -164,11 +160,11 @@ export const registerPasskey = async (formData) => {
   // - Verify the challenge matches what it sent
   // - Decode the attestation object
   // - Extract the public key
-  // - REPLACE any existing credential for this employee
+  // - REPLACE any existing credential for this device
   // - Consume the one-time invitation token
   // - Issue tokens
   const tokenResponse = await api.post("/register/verify", {
-    employee_id: formData.employee_id,
+    device_id: formData.device_id,
     credential: credentialData,
   });
 
@@ -205,19 +201,19 @@ export const registerPasskey = async (formData) => {
  *
  * WHY THIS ENABLES DEVICE REPLACEMENT:
  *    → Phone A registers: server stores public_key_A
- *    → Phone B registers same employee: server REPLACES with public_key_B
+ *    → Phone B registers same device ID: server REPLACES with public_key_B
  *    → Phone A authenticates: signs with private_key_A
  *    → Server verifies with public_key_B: SIGNATURE MISMATCH → rejected!
  *    → Phone A is automatically locked out without any manual action
  *
- * @param {string|null} employeeId - Optional employee id (for directed auth)
+ * @param {string|null} deviceId - Optional device id (for directed auth)
  * @returns {object} Token data from successful authentication
  * @throws {Error} If authentication fails
  */
-export const authenticatePasskey = async (employeeId = null) => {
+export const authenticatePasskey = async (deviceId = null) => {
   // Step 1: Get authentication options from the server
   const options = await api.post("/auth/options", {
-    employee_id: employeeId,
+    device_id: deviceId,
   });
 
   // Step 2: Convert to the format navigator.credentials.get() expects

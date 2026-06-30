@@ -6,14 +6,13 @@
  */
 const config = {
   // Backend API base URL — change this when deploying to a different environment
-  API_BASE_URL: "https://web-auth-poc-api.onrender.com",
 
   // Token storage keys (localStorage)
   STORAGE_KEYS: {
     REFRESH_TOKEN: "webauthn_refresh_token",
     ACCESS_TOKEN: "webauthn_access_token",
     TOKEN_EXPIRY: "webauthn_token_expiry",
-    EMPLOYEE_ID: "webauthn_employee_id",
+    DEVICE_ID: "webauthn_device_id",
   },
 
   // Refresh token validity (for display purposes)
