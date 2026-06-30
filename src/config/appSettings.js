@@ -6,6 +6,7 @@
  */
 const config = {
   // Backend API base URL — change this when deploying to a different environment
+   API_BASE_URL: "https://web-auth-poc-api.vercel.app",
 
   // Token storage keys (localStorage)
   STORAGE_KEYS: {
