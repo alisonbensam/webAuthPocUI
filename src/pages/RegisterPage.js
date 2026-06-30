@@ -2,12 +2,12 @@
  * Register Device Page — Invitation-token onboarding + WebAuthn passkey creation.
  *
  * This is the primary entry point of the app (there is NO username/password
- * login). An employee onboards a device using an admin-issued Invitation Token.
+ * login). A device onboards using an admin-issued Invitation Token.
  *
  * Onboarding flow:
- * 1. User enters Location, Employee ID, Company Email, and Invitation Token
+ * 1. User enters Device ID and Invitation Token
  * 2. User clicks "Register Device"
- * 3. Backend validates the employee + invitation token (rejects if invalid/expired)
+ * 3. Backend validates the device + invitation token (rejects if invalid/expired)
  * 4. Browser calls navigator.credentials.create()
  * 5. Platform authenticator prompts for biometric/PIN
  * 6. NEW keypair is generated:
@@ -17,7 +17,7 @@
  *    consumes the invitation token, and issues tokens → user is logged in
  *
  * Device replacement:
- * If this employee already had a registered device and completes registration
+ * If this device already had a registered passkey and completes registration
  * again with a valid Invitation Token, the backend replaces the Credential ID +
  * Public Key and revokes the previous Refresh Token — the old device is signed
  * out automatically on its next app open.
@@ -55,9 +55,7 @@ const RegisterPage = ({
   onDeviceReplaced,
 }) => {
   // Onboarding form fields
-  const [location, setLocation] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
-  const [companyEmail, setCompanyEmail] = useState("");
+  const [deviceId, setDeviceId] = useState("");
   const [invitationToken, setInvitationToken] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -67,9 +65,7 @@ const RegisterPage = ({
   const [webAuthnSupported] = useState(isWebAuthnSupported());
 
   const formComplete =
-    location.trim() &&
-    employeeId.trim() &&
-    companyEmail.trim() &&
+    deviceId.trim() &&
     invitationToken.trim();
 
   /**
@@ -96,9 +92,7 @@ const RegisterPage = ({
       // Backend validates the invitation token BEFORE returning registration
       // options. An invalid/expired token throws a 400 with a friendly message.
       const tokenData = await registerPasskey({
-        employee_id: employeeId.trim(),
-        location: location.trim(),
-        company_email: companyEmail.trim(),
+        device_id: deviceId.trim(),
         invitation_token: invitationToken.trim(),
       });
       onRegistrationSuccess(tokenData);
@@ -188,7 +182,7 @@ const RegisterPage = ({
                 Register Device
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Enter your details and invitation token to onboard this device
+                Enter your device ID and invitation token to onboard this device
               </Typography>
             </Box>
 
@@ -213,31 +207,10 @@ const RegisterPage = ({
 
             <form onSubmit={handleRegister}>
               <TextField
-                label="Location"
-                placeholder="e.g., Clinic 1"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                fullWidth
-                required
-                margin="normal"
-                disabled={busy}
-              />
-              <TextField
-                label="Employee ID"
-                placeholder="e.g., EMP001"
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
-                fullWidth
-                required
-                margin="normal"
-                disabled={busy}
-              />
-              <TextField
-                label="Company Email"
-                type="email"
-                placeholder="e.g., alison@clinic.com"
-                value={companyEmail}
-                onChange={(e) => setCompanyEmail(e.target.value)}
+                label="Device ID"
+                placeholder="e.g., DEVICE001"
+                value={deviceId}
+                onChange={(e) => setDeviceId(e.target.value)}
                 fullWidth
                 required
                 margin="normal"

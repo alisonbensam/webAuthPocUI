@@ -26,7 +26,7 @@ export const storeTokens = (tokenData) => {
   localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokenData.access_token);
   localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokenData.refresh_token);
   localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, tokenData.refresh_token_expiry);
-  localStorage.setItem(STORAGE_KEYS.EMPLOYEE_ID, tokenData.employee_id);
+  localStorage.setItem(STORAGE_KEYS.DEVICE_ID, tokenData.device_id);
 };
 
 /**
@@ -37,7 +37,7 @@ export const clearSession = () => {
   localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
   localStorage.removeItem(STORAGE_KEYS.TOKEN_EXPIRY);
-  localStorage.removeItem(STORAGE_KEYS.EMPLOYEE_ID);
+  localStorage.removeItem(STORAGE_KEYS.DEVICE_ID);
 };
 
 /**
@@ -48,10 +48,10 @@ export const getRefreshToken = () => {
 };
 
 /**
- * Get the stored employee identifier.
+ * Get the stored device identifier.
  */
-export const getEmployeeId = () => {
-  return localStorage.getItem(STORAGE_KEYS.EMPLOYEE_ID);
+export const getDeviceId = () => {
+  return localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
 };
 
 /**

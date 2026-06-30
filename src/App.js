@@ -18,7 +18,7 @@
  *    └─ FAIL (no passkey on device) → Step 3
  *
  * 3. Show REGISTER page (invitation-token onboarding)
- *    └─ User enters Location, Employee ID, Company Email, Invitation Token
+ *    └─ User enters Device ID and Invitation Token
  *    └─ User completes biometric (navigator.credentials.create) → HOME
  *    └─ OR uses "Sign in with Passkey" (existing passkey) → HOME
  *
@@ -36,7 +36,7 @@ import HomePage from "./pages/HomePage";
 import DeviceReplacedPage from "./pages/DeviceReplacedPage";
 import LoadingPage from "./pages/LoadingPage";
 
-import { refreshAccessToken, getRefreshToken, getEmployeeId, clearSession } from "./services/authService";
+import { refreshAccessToken, getRefreshToken, getDeviceId, clearSession } from "./services/authService";
 import { authenticatePasskey, isWebAuthnSupported } from "./services/webAuthnService";
 
 // Material UI theme
@@ -61,7 +61,7 @@ const APP_STATE = {
 
 const App = () => {
   const [appState, setAppState] = useState(APP_STATE.LOADING);
-  const [employeeId, setEmployeeId] = useState("");
+  const [deviceId, setDeviceId] = useState("");
   const [authMethod, setAuthMethod] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("Checking authentication...");
 
@@ -86,7 +86,7 @@ const App = () => {
       if (result) {
         // Refresh token is valid — go directly to Home
         setAuthMethod("Refresh Token");
-        setEmployeeId(result.employee_id);
+        setDeviceId(result.device_id);
         setAppState(APP_STATE.HOME);
         return;
       }
@@ -96,14 +96,14 @@ const App = () => {
     // Step 2: Try passkey authentication
     // The device might have a valid passkey even if the refresh token is gone
     if (isWebAuthnSupported()) {
-      const storedEmployeeId = getEmployeeId();
-      if (storedEmployeeId) {
+      const storedDeviceId = getDeviceId();
+      if (storedDeviceId) {
         setLoadingMessage("Attempting passkey authentication...");
         try {
-          const result = await authenticatePasskey(storedEmployeeId);
+          const result = await authenticatePasskey(storedDeviceId);
           if (result) {
             setAuthMethod("Passkey");
-            setEmployeeId(result.employee_id);
+            setDeviceId(result.device_id);
             setAppState(APP_STATE.HOME);
             return;
           }
@@ -135,7 +135,7 @@ const App = () => {
    */
   const handlePasskeySuccess = (tokenData) => {
     setAuthMethod("Passkey");
-    setEmployeeId(tokenData?.employee_id || "");
+    setDeviceId(tokenData?.device_id || "");
     setAppState(APP_STATE.HOME);
   };
 
@@ -152,7 +152,7 @@ const App = () => {
    */
   const handleRegistrationSuccess = (tokenData) => {
     setAuthMethod("New Registration");
-    setEmployeeId(tokenData?.employee_id || "");
+    setDeviceId(tokenData?.device_id || "");
     setAppState(APP_STATE.HOME);
   };
 
@@ -161,7 +161,7 @@ const App = () => {
    */
   const handleLogout = () => {
     setAuthMethod("");
-    setEmployeeId("");
+    setDeviceId("");
     setAppState(APP_STATE.REGISTER);
   };
 

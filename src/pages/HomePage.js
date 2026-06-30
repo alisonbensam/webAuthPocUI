@@ -1,9 +1,9 @@
 /**
  * Home Page — Main authenticated view.
  *
- * Displays the employee's device registration information and session details:
+ * Displays the device's registration information and session details:
  * - Location
- * - Employee ID
+ * - Device ID
  * - Company Email
  * - Current Credential ID (truncated for display)
  * - Registration timestamp
@@ -96,9 +96,9 @@ const HomePage = ({ onLogout, authMethod }) => {
     return `${credId.substring(0, 10)}...${credId.substring(credId.length - 10)}`;
   };
 
-  const employeeId =
-    deviceInfo?.employee_id ||
-    localStorage.getItem(config.STORAGE_KEYS.EMPLOYEE_ID) ||
+  const deviceId =
+    deviceInfo?.device_id ||
+    localStorage.getItem(config.STORAGE_KEYS.DEVICE_ID) ||
     "Unknown";
 
   return (
@@ -134,7 +134,7 @@ const HomePage = ({ onLogout, authMethod }) => {
                 />
               </ListItem>
               <ListItem>
-                <ListItemText primary="Employee ID" secondary={employeeId} />
+                <ListItemText primary="Device ID" secondary={deviceId} />
               </ListItem>
               <ListItem>
                 <ListItemText
