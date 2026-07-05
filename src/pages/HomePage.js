@@ -31,16 +31,37 @@ import {
   Alert,
   Chip,
   Stack,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import InstallMobileIcon from "@mui/icons-material/InstallMobile";
 import { logout, getDeviceInfo, clearSession } from "../services/authService";
 import config from "../config/appSettings";
 
 const HomePage = ({ onLogout, authMethod }) => {
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [error, setError] = useState("");
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  // Listen for the PWA install prompt
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    setDeferredPrompt(null);
+  };
 
   // Detect browser and platform information
   const getBrowserInfo = () => {
@@ -106,10 +127,22 @@ const HomePage = ({ onLogout, authMethod }) => {
       <Box sx={{ py: 4 }}>
         <Card>
           <CardContent sx={{ p: 3 }}>
+            {deferredPrompt && (
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Tooltip title="Install App">
+                  <IconButton color="primary" onClick={handleInstallClick}>
+                    <InstallMobileIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
             <Box sx={{ textAlign: "center", mb: 2 }}>
               <CheckCircleIcon sx={{ fontSize: 48, color: "success.main", mb: 1 }} />
-              <Typography variant="h5" component="h1" gutterBottom>
-                Device Registered
+              <Typography variant="h5" component="h1" gutterBottom fontWeight="bold">
+                You are Logged in
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                This is POC for login mechanism
               </Typography>
               <Chip
                 label={`Authenticated via ${authMethod || "token"}`}
